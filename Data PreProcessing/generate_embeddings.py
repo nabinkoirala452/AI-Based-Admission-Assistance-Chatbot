@@ -20,7 +20,7 @@ from sentence_transformers import SentenceTransformer
 
 print("\n📂 Step 1: Loading Q&A data...")
 
-with open("qa_complete_pairs.json", "r", encoding="utf-8") as f:
+with open("../Data/qa_complete_pairs.json", "r", encoding="utf-8") as f:
     data = json.load(f)
 
 print(f"   ✓ Loaded {len(data)} Q&A pairs")

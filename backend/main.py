@@ -2,14 +2,13 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List
-import chromadb, os
 from dotenv import load_dotenv
-from rag_graph import run_rag
- 
+from rag_graph import run_rag, ALL_DEPARTMENTS
+
 load_dotenv()
- 
+
 app = FastAPI(title="University Admission Chatbot API", version="1.0.0")
- 
+
 # ── CORS — required for React frontend ────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
@@ -17,52 +16,47 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
- 
-# ── Request / Response models (matching BACKEND_CONTRACT.md) ──────────────────
+
+# ── Request / Response models ──────────────────────────────────────────────────
 class ChatRequest(BaseModel):
-    message: str                  # frontend sends "message" (not "question")
+    message: str
     department: Optional[str] = None   # null = search all departments
- 
+
 class SourceInfo(BaseModel):
-    department: str               # frontend sees "department" (mapped from "source")
+    department: str
     category: str
     distance: float
- 
+
 class ChatResponse(BaseModel):
-    response: str                 # frontend expects "response" (not "answer")
+    response: str
     sources: List[SourceInfo]
- 
+
 # ── Routes ─────────────────────────────────────────────────────────────────────
 @app.get("/health")
 def health():
     return {"status": "ok"}
- 
- 
+
+
 @app.get("/sources")
 def get_sources():
-    """Return all unique department names for the filter dropdown."""
-    chroma_path = os.getenv("CHROMA_PATH", "../Data PreProcessing/chroma_db")
-    client = chromadb.PersistentClient(path=chroma_path)
-    collection = client.get_collection("university_qa")
- 
-    all_meta = collection.get(include=["metadatas"])["metadatas"]
-    # The ChromaDB metadata key is "source" — we expose it as department names
-    departments = sorted(set(m["source"] for m in all_meta if m.get("source")))
-    return {"sources": departments}
- 
- 
+    """
+    Return individual department names for the frontend dropdown.
+    These come from DEPT_TO_SOURCE in rag_graph.py — the single source
+    of truth — so the filter values always match what ChromaDB has.
+    """
+    return {"sources": ALL_DEPARTMENTS}
+
+
 @app.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest):
     if not req.message.strip():
         raise HTTPException(status_code=400, detail="Message cannot be empty")
- 
-    # run_rag uses "source" internally (matches ChromaDB metadata key)
+
     result = run_rag(
         question=req.message.strip(),
         department=req.department if req.department not in (None, "All") else None,
     )
- 
-    # Rename "source" → "department" and "answer" → "response" for the contract
+
     sources = [
         SourceInfo(
             department=s.get("source", ""),
@@ -71,5 +65,5 @@ def chat(req: ChatRequest):
         )
         for s in result["sources"]
     ]
- 
+
     return ChatResponse(response=result["answer"], sources=sources)

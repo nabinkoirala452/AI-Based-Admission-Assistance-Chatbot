@@ -1,5 +1,5 @@
 # 🎓 AI-Based Admission Assistance Chatbot
-### Vignan's Foundation for Science, Technology & Research (FSTR University)
+### Vignan's Foundation for Science, Technology & Research 
 
 ---
 

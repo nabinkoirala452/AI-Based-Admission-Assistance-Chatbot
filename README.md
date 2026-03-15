@@ -69,14 +69,14 @@ The knowledge base is built from **489 Q&A pairs** across **9 department sheets*
 
 | Layer | Technology | Cost |
 |---|---|---|
-| **Frontend** | React (Vite) | Free |
-| **Backend** | FastAPI (Python) | Free |
-| **LLM** | LLaMA 3 via Groq API | Free |
-| **Embeddings** | sentence-transformers `all-MiniLM-L6-v2` | Free (local) |
-| **Vector Database** | ChromaDB | Free (local) |
-| **RAG Framework** | LangChain | Free |
-| **Frontend Deploy** | Vercel | Free |
-| **Backend Deploy** | Render | Free |
+| **Frontend** | React (Vite) 
+| **Backend** | FastAPI (Python) 
+| **LLM** | LLaMA 3 via Groq API 
+| **Embeddings** | sentence-transformers `all-MiniLM-L6-v2` 
+| **Vector Database** | ChromaDB 
+| **RAG Framework** | LangChain
+| **Frontend Deploy** | Vercel 
+| **Backend Deploy** | Render 
 
 ---
 

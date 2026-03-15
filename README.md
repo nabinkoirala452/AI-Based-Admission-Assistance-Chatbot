@@ -1,9 +1,9 @@
-# 🎓 AI-Based Admission Assistance Chatbot
+# AI-Based Admission Assistance Chatbot
 ### Vignan's Foundation for Science, Technology & Research 
 
 ---
 
-## 📌 Table of Contents
+## Table of Contents
 
 - [Introduction](#introduction)
 - [Problem Statement](#problem-statement)
@@ -17,7 +17,7 @@
 
 ---
 
-## 📖 Introduction
+## Introduction
 
 This project is an **AI-powered Admission Assistance Chatbot** built for **Vignan's University**. It is designed to be embedded on the university's official website to assist prospective students with instant, personalized guidance on:
 
@@ -31,7 +31,7 @@ The chatbot uses **Retrieval-Augmented Generation (RAG)** — a cutting-edge AI 
 
 ---
 
-## ❗ Problem Statement
+## Problem Statement
 
 Prospective students often face challenges in obtaining accurate information about:
 - Admission procedures and eligibility criteria
@@ -42,7 +42,7 @@ This leads to confusion, delays, and missed opportunities. The goal is to develo
 
 ---
 
-## ✅ Solution Overview
+## Solution Overview
 
 ```
 Student asks a question on the university website
@@ -65,7 +65,7 @@ The knowledge base is built from **489 Q&A pairs** across **9 department sheets*
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology | Cost |
 |---|---|---|
@@ -80,7 +80,7 @@ The knowledge base is built from **489 Q&A pairs** across **9 department sheets*
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 AI-Based-Admission-Assistance-Chatbot/
@@ -117,7 +117,7 @@ AI-Based-Admission-Assistance-Chatbot/
 
 ---
 
-## 🎨 Frontend
+## Frontend
 
 The frontend is a **React application** built with Vite. It consists of two parts:
 
@@ -128,14 +128,14 @@ The frontend is a **React application** built with Vite. It consists of two part
 
 | Feature | Description |
 |---|---|
-| 🏠 Landing Page | Hero section, stats bar, departments, highlights, contact |
-| 💬 Floating Chat Widget | Opens/closes with a toggle button (bottom-right) |
-| 🏫 Department Filter | Dropdown to filter questions by department (17 departments) |
-| 💡 Suggested Questions | Dynamic chips that change based on selected department |
-| 📜 Chat History | Logs all conversations in a separate History tab |
-| ⌨️ Typing Indicator | Animated dots while bot is generating a response |
-| ⚠️ Error Handling | Shows retry button if backend is unreachable |
-| 📱 Responsive Design | Works on desktop and mobile screens |
+| Landing Page | Hero section, stats bar, departments, highlights, contact |
+| Floating Chat Widget | Opens/closes with a toggle button (bottom-right) |
+| Department Filter | Dropdown to filter questions by department (17 departments) |
+| Suggested Questions | Dynamic chips that change based on selected department |
+| Chat History | Logs all conversations in a separate History tab |
+| Typing Indicator | Animated dots while bot is generating a response |
+| Error Handling | Shows retry button if backend is unreachable |
+| Responsive Design | Works on desktop and mobile screens |
 
 ### Frontend File Overview
 
@@ -214,7 +214,7 @@ async function fetchBotResponse(userMessage, department) {
 
 ---
 
-## ⚙️ Backend
+## Backend
 
 The backend is a **FastAPI** application with a **Retrieval-Augmented Generation (RAG)** pipeline that powers the chatbot. Here's what happens on the backend:
 
@@ -265,7 +265,7 @@ backend/
 - Python 3.9 or higher
 - A free Groq API key (get it at [console.groq.com](https://console.groq.com))
 
-#### Step 1️⃣ — Create One Python Virtual Environment (All-in-One)
+#### Step 1 — Create One Python Virtual Environment (All-in-One)
 
 Create a single shared Python virtual environment at the project root for both data preprocessing and backend:
 
@@ -288,7 +288,7 @@ pip install -r requirements.txt
 
 > ℹ️ **One venv for everything** — You'll use this same activated environment for both data preprocessing and backend. No need to create separate environments. Your terminal should show `(venv)` at the prompt after activation.
 
-#### Step 2️⃣ — Generate Q&A Embeddings (One-Time Setup)
+#### Step 2 — Generate Q&A Embeddings (One-Time Setup)
 
 Convert the Excel Q&A file into embeddings and store them in ChromaDB:
 
@@ -315,7 +315,7 @@ python generate_embeddings.py
 ✓ Added 489 entries to ChromaDB
 ```
 
-#### Step 3️⃣ — Create `.env` File with Groq API Key
+#### Step 3 — Create `.env` File with Groq API Key
 
 Create a file named `.env` in the `backend/` folder:
 
@@ -333,7 +333,7 @@ CHROMA_PATH=../data_preprocessing/chroma_db
 
 ⚠️ **Never commit `.env` to Git!** It's already in `.gitignore`.
 
-#### Step 4️⃣ — Start the FastAPI Server
+#### Step 4 — Start the FastAPI Server
 
 ```bash
 # Make sure you're in the backend/ folder and venv is activated
@@ -350,7 +350,7 @@ INFO:     Uvicorn running on http://127.0.0.1:8000
 INFO:     Application startup complete
 ```
 
-#### Step 5️⃣ — Test the Backend API
+#### Step 5 — Test the Backend API
 
 The backend exposes three endpoints:
 
@@ -413,8 +413,8 @@ curl -X POST http://localhost:8000/chat \
 
 | Variable | Required | Default | Example |
 |---|---|---|---|
-| `GROQ_API_KEY` | ✅ Yes | None | `gsk_abc123xyz...` |
-| `CHROMA_PATH` | ❌ No | `../data_preprocessing/chroma_db` | `/absolute/path/to/chroma_db` |
+| `GROQ_API_KEY` | Yes | None | `gsk_abc123xyz...` |
+| `CHROMA_PATH` | No | `../data_preprocessing/chroma_db` | `/absolute/path/to/chroma_db` |
 
 ### Common Workflow: Start Everything Fresh
 
@@ -452,7 +452,7 @@ npm run dev
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
 ### Frontend — Deploy on Vercel (Free)
 
@@ -492,7 +492,7 @@ Then redeploy the frontend.
 
 ---
 
-## 📄 License
+## License
 
 This project is developed for academic and institutional purposes at VFSTR .
 

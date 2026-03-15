@@ -1,67 +1,64 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import "./ChatBot.css";
-
+ 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const API_BASE_URL = "http://localhost:8000"; // 🔁 Change to your deployed backend URL
-
-const DEPARTMENTS = [
-  { value: "all",                    label: "All Departments" },
-  { value: "CSE AI & ML",            label: "CSE — AI & ML" },
-  { value: "CSE Data Science",       label: "CSE — Data Science" },
-  { value: "CSE CSBS",               label: "CSE — CSBS" },
-  { value: "CSE General",            label: "CSE — General" },
-  { value: "IoT",                    label: "IoT" },
-  { value: "ECE",                    label: "ECE" },
-  { value: "EEE",                    label: "EEE" },
-  { value: "IT",                     label: "IT" },
-  { value: "Chemical Engineering",   label: "Chemical Engg." },
-  { value: "Textile",                label: "Textile" },
-  { value: "Food Technology",        label: "Food Technology" },
-  { value: "Agriculture",            label: "B.Sc Agriculture" },
-  { value: "Civil Engineering",      label: "Civil Engg." },
-  { value: "Mechanical Engineering", label: "Mechanical Engg." },
-  { value: "Biotechnology",          label: "Biotechnology" },
-  { value: "Biomedical",             label: "Biomedical" },
-];
-
+ 
+// Pretty labels for known departments — used only for display.
+// The VALUE sent to the backend always comes from ChromaDB via /sources,
+// so even if you add new sheets later, they appear automatically.
+const DEPT_LABELS = {
+  "CSE AI & ML":            "CSE — AI & ML",
+  "CSE Data Science":       "CSE — Data Science",
+  "CSE CSBS":               "CSE — CSBS",
+  "IoT":                    "IoT",
+  "Chemical Engineering":   "Chemical Engg.",
+  "Textile":                "Textile",
+  "Food Technology":        "Food Technology",
+};
+ 
+// Suggested questions per department value
 const SUGGESTED_BY_DEPT = {
   all:                      ["NIRF Ranking", "Admission via EAMCET", "Application deadline", "Accreditations (NAAC/NBA)", "Other states apply?"],
   "CSE AI & ML":            ["Languages taught?", "AI labs available?", "Real-time projects?", "Industries hiring?"],
   "CSE Data Science":       ["Data Science curriculum", "Tools taught", "Career opportunities", "Internship availability"],
   "CSE CSBS":               ["What is CSBS?", "Business subjects?", "CSBS career options", "Industry-oriented?"],
-  "CSE General":            ["Programming languages", "Coding labs?", "Cloud computing?", "Placement record"],
   "IoT":                    ["IoT curriculum", "Embedded systems?", "IoT project work", "Career after IoT"],
-  "ECE":                    ["ECE career options", "Embedded systems?", "5G training?", "ECE lab facilities"],
-  "EEE":                    ["EEE career options", "Power systems?", "EEE lab facilities", "Companies hiring?"],
-  "IT":                     ["IT curriculum", "Software tools?", "IT internships", "IT placement record"],
   "Chemical Engineering":   ["Industries hiring?", "Chemical labs?", "Software tools?", "Safety training"],
   "Textile":                ["Textile industry career", "Lab facilities?", "Internship?", "Curriculum overview"],
   "Food Technology":        ["Food Tech careers", "Food labs?", "Food safety training", "FMCG companies?"],
-  "Agriculture":            ["B.Sc Agri career", "Agri labs?", "Government jobs?", "Internship?"],
-  "Civil Engineering":      ["Civil career options", "AutoCAD training?", "Construction internship?", "Smart city courses?"],
-  "Mechanical Engineering": ["Mechanical careers", "CAD/CAM training?", "Core companies?", "Lab facilities?"],
-  "Biotechnology":          ["Biotech careers", "Genetic engineering?", "Biotech labs?", "Pharma hiring?"],
-  "Biomedical":             ["Biomedical careers", "Medical device training?", "Lab facilities?", "Healthcare hiring?"],
 };
-
+ 
 // ─── Utility ─────────────────────────────────────────────────────────────────
 function formatTime(date) {
   return new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
-
+ 
 function generateId() {
   return Math.random().toString(36).slice(2, 9);
 }
-
+ 
+// Returns display label for a department value.
+// Falls back to the raw value if it's a new department not in DEPT_LABELS yet.
+function getDeptLabel(value) {
+  return DEPT_LABELS[value] ?? value;
+}
+ 
 function getWelcomeMessage(department) {
   if (!department || department === "all") {
     return "👋 Hello! I'm <strong>Vignan's Admission Assistant</strong>. I can help with admissions, courses, eligibility, deadlines and more.<br/>What would you like to know?";
   }
-  const dept = DEPARTMENTS.find((d) => d.value === department);
-  return `👋 Hello! You've selected <strong>${dept?.label}</strong>. Ask me anything about this department — courses, careers, labs, internships and more!`;
+  return `👋 Hello! You've selected <strong>${getDeptLabel(department)}</strong>. Ask me anything about this department — courses, careers, labs, internships and more!`;
 }
-
-// ─── API Call ─────────────────────────────────────────────────────────────────
+ 
+// ─── API Calls ────────────────────────────────────────────────────────────────
+async function fetchSources() {
+  const res = await fetch(`${API_BASE_URL}/sources`);
+  if (!res.ok) throw new Error("Failed to fetch sources");
+  const data = await res.json();
+  return data.sources; // string[] — exact values stored in ChromaDB
+}
+ 
 async function fetchBotResponse(userMessage, department) {
   const response = await fetch(`${API_BASE_URL}/chat`, {
     method: "POST",
@@ -75,7 +72,7 @@ async function fetchBotResponse(userMessage, department) {
   const data = await response.json();
   return data.response;
 }
-
+ 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 function BotAvatar() {
   return (
@@ -89,11 +86,11 @@ function BotAvatar() {
     </div>
   );
 }
-
+ 
 function UserAvatar() {
   return <div className="msg-avatar user-msg-avatar" aria-hidden="true">U</div>;
 }
-
+ 
 function TypingIndicator() {
   return (
     <div className="msg-row" aria-live="polite" aria-label="Bot is typing">
@@ -106,7 +103,7 @@ function TypingIndicator() {
     </div>
   );
 }
-
+ 
 function Message({ msg }) {
   const isUser = msg.role === "user";
   return (
@@ -120,7 +117,7 @@ function Message({ msg }) {
         <div className={`msg-time ${isUser ? "" : "bot-time"}`}>
           {formatTime(msg.timestamp)}
           {isUser && msg.department && msg.department !== "all" && (
-            <span className="msg-dept-tag">{msg.department}</span>
+            <span className="msg-dept-tag">{getDeptLabel(msg.department)}</span>
           )}
         </div>
       </div>
@@ -128,7 +125,7 @@ function Message({ msg }) {
     </div>
   );
 }
-
+ 
 function ErrorMessage({ onRetry }) {
   return (
     <div className="msg-row">
@@ -142,8 +139,9 @@ function ErrorMessage({ onRetry }) {
     </div>
   );
 }
-
-function DepartmentDropdown({ value, onChange }) {
+ 
+// ── Department dropdown — built from live /sources data ──────────────────────
+function DepartmentDropdown({ value, onChange, departments }) {
   return (
     <div className="dept-dropdown-wrap">
       <svg className="dept-icon" width="11" height="11" fill="none" viewBox="0 0 24 24">
@@ -156,8 +154,10 @@ function DepartmentDropdown({ value, onChange }) {
         onChange={(e) => onChange(e.target.value)}
         aria-label="Select department"
       >
-        {DEPARTMENTS.map((d) => (
-          <option key={d.value} value={d.value}>{d.label}</option>
+        <option value="all">All Departments</option>
+        {departments.map((d) => (
+          // value = exact ChromaDB source string, label = pretty display name
+          <option key={d} value={d}>{getDeptLabel(d)}</option>
         ))}
       </select>
       <svg className="dept-chevron" width="10" height="10" fill="none" viewBox="0 0 24 24">
@@ -166,12 +166,12 @@ function DepartmentDropdown({ value, onChange }) {
     </div>
   );
 }
-
+ 
 function HistoryItem({ item, onClick }) {
   return (
     <button className="history-item" onClick={onClick} aria-label={`Resume chat: ${item.userMsg}`}>
       {item.department && item.department !== "all" && (
-        <div className="history-dept-badge">{item.department}</div>
+        <div className="history-dept-badge">{getDeptLabel(item.department)}</div>
       )}
       <div className="history-title">{item.userMsg}</div>
       <div className="history-preview">{item.botMsg}</div>
@@ -179,7 +179,7 @@ function HistoryItem({ item, onClick }) {
     </button>
   );
 }
-
+ 
 // ─── Main ChatBot Component ───────────────────────────────────────────────────
 export default function ChatBot() {
   const [isOpen, setIsOpen]           = useState(false);
@@ -191,11 +191,23 @@ export default function ChatBot() {
   const [hasError, setHasError]       = useState(false);
   const [history, setHistory]         = useState([]);
   const [lastUserMsg, setLastUserMsg] = useState("");
-
+ 
+  // ── Departments fetched from /sources (single source of truth) ──────────────
+  const [departments, setDepartments] = useState([]);
+ 
+  useEffect(() => {
+    fetchSources()
+      .then(setDepartments)
+      .catch(() => {
+        // Fallback to known list if backend is unreachable on mount
+        setDepartments(Object.keys(DEPT_LABELS));
+      });
+  }, []);
+ 
   const messagesEndRef = useRef(null);
   const inputRef       = useRef(null);
   const textareaRef    = useRef(null);
-
+ 
   // Set welcome message on mount
   useEffect(() => {
     setMessages([{
@@ -205,11 +217,10 @@ export default function ChatBot() {
       timestamp: new Date(),
     }]);
   }, []);
-
+ 
   // When department changes, inject a context-switch system message
   const handleDepartmentChange = useCallback((newDept) => {
     setDepartment(newDept);
-    const dept = DEPARTMENTS.find((d) => d.value === newDept);
     setMessages((prev) => [
       ...prev,
       {
@@ -217,25 +228,25 @@ export default function ChatBot() {
         role: "bot",
         text: newDept === "all"
           ? "Switched to <strong>All Departments</strong>. Ask me anything about Vignan's admissions!"
-          : `Now focused on <strong>${dept?.label}</strong>. Ask me anything specific to this department!`,
+          : `Now focused on <strong>${getDeptLabel(newDept)}</strong>. Ask me anything specific to this department!`,
         timestamp: new Date(),
       },
     ]);
     setHasError(false);
   }, []);
-
+ 
   // Scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
-
+ 
   // Auto-focus input when chat opens
   useEffect(() => {
     if (isOpen && activeTab === "chat") {
       setTimeout(() => inputRef.current?.focus(), 300);
     }
   }, [isOpen, activeTab]);
-
+ 
   const addToHistory = useCallback((userMsg, botMsg, dept) => {
     setHistory((prev) => [
       {
@@ -249,17 +260,17 @@ export default function ChatBot() {
       ...prev,
     ]);
   }, []);
-
+ 
   const sendMessage = useCallback(
     async (text) => {
       const trimmed = (text || inputValue).trim();
       if (!trimmed || isTyping) return;
-
+ 
       setInputValue("");
       setHasError(false);
       setLastUserMsg(trimmed);
       if (textareaRef.current) textareaRef.current.style.height = "auto";
-
+ 
       const userMsg = {
         id: generateId(),
         role: "user",
@@ -269,7 +280,7 @@ export default function ChatBot() {
       };
       setMessages((prev) => [...prev, userMsg]);
       setIsTyping(true);
-
+ 
       try {
         const responseText = await fetchBotResponse(trimmed, department);
         const botMsg = {
@@ -289,25 +300,25 @@ export default function ChatBot() {
     },
     [inputValue, isTyping, department, addToHistory]
   );
-
+ 
   const handleRetry = useCallback(() => {
     setHasError(false);
     sendMessage(lastUserMsg);
   }, [lastUserMsg, sendMessage]);
-
+ 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   };
-
+ 
   const handleTextareaChange = (e) => {
     setInputValue(e.target.value);
     e.target.style.height = "auto";
     e.target.style.height = Math.min(e.target.scrollHeight, 90) + "px";
   };
-
+ 
   const clearChat = () => {
     setMessages([{
       id: "welcome",
@@ -317,16 +328,16 @@ export default function ChatBot() {
     }]);
     setHasError(false);
   };
-
-  const currentSuggestions  = SUGGESTED_BY_DEPT[department] || SUGGESTED_BY_DEPT["all"];
-  const selectedDeptLabel   = DEPARTMENTS.find((d) => d.value === department)?.label;
-
+ 
+  const currentSuggestions = SUGGESTED_BY_DEPT[department] || SUGGESTED_BY_DEPT["all"];
+  const selectedDeptLabel  = getDeptLabel(department);
+ 
   return (
     <>
       {/* ── Chat Window ── */}
       {isOpen && (
         <div className="chat-window" role="dialog" aria-label="Admission Assistant Chat">
-
+ 
           {/* Header */}
           <div className="chat-header">
             <div className="bot-avatar-header">
@@ -358,11 +369,16 @@ export default function ChatBot() {
               </button>
             </div>
           </div>
-
+ 
           {/* ── Department Filter Bar ── */}
           <div className="dept-bar">
             <span className="dept-bar-label">Dept:</span>
-            <DepartmentDropdown value={department} onChange={handleDepartmentChange} />
+            {/* Pass live departments array — values guaranteed to match ChromaDB */}
+            <DepartmentDropdown
+              value={department}
+              onChange={handleDepartmentChange}
+              departments={departments}
+            />
             {department !== "all" && (
               <button
                 className="dept-clear-btn"
@@ -374,7 +390,7 @@ export default function ChatBot() {
               </button>
             )}
           </div>
-
+ 
           {/* Tabs */}
           <div className="chat-tabs" role="tablist">
             <button
@@ -394,7 +410,7 @@ export default function ChatBot() {
               History {history.length > 0 && <span className="history-badge">{history.length}</span>}
             </button>
           </div>
-
+ 
           {/* ── Chat Tab ── */}
           {activeTab === "chat" && (
             <div className="tab-content">
@@ -406,8 +422,8 @@ export default function ChatBot() {
                 {hasError && <ErrorMessage onRetry={handleRetry} />}
                 <div ref={messagesEndRef} />
               </div>
-
-              {/* Suggested questions — change dynamically with department */}
+ 
+              {/* Suggested questions */}
               <div className="suggestions-area">
                 <div className="suggestions-label">
                   {department !== "all" ? `Suggested for ${selectedDeptLabel}` : "Suggested Questions"}
@@ -425,7 +441,7 @@ export default function ChatBot() {
                   ))}
                 </div>
               </div>
-
+ 
               {/* Input */}
               <div className="input-area">
                 <textarea
@@ -456,7 +472,7 @@ export default function ChatBot() {
               </div>
             </div>
           )}
-
+ 
           {/* ── History Tab ── */}
           {activeTab === "history" && (
             <div className="tab-content history-tab-content">
@@ -480,7 +496,7 @@ export default function ChatBot() {
           )}
         </div>
       )}
-
+ 
       {/* ── Toggle Button ── */}
       <button
         className={`chat-toggle ${isOpen ? "open" : ""}`}

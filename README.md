@@ -14,13 +14,13 @@
 - [Backend](#backend) ← _to be filled by backend team_
 - [How to Run](#how-to-run)
 - [Deployment](#deployment)
-- [Team](#team)
+
 
 ---
 
 ## 📖 Introduction
 
-This project is an **AI-powered Admission Assistance Chatbot** built for **Vignan's FSTR University**. It is designed to be embedded on the university's official website to assist prospective students with instant, personalized guidance on:
+This project is an **AI-powered Admission Assistance Chatbot** built for **Vignan's University**. It is designed to be embedded on the university's official website to assist prospective students with instant, personalized guidance on:
 
 - Admission procedures and eligibility criteria
 - Course and department details
@@ -122,7 +122,7 @@ AI-Based-Admission-Assistance-Chatbot/
 
 The frontend is a **React application** built with Vite. It consists of two parts:
 
-1. **University Landing Page** — a full informational webpage about Vignan's FSTR University
+1. **University Landing Page** — a full informational webpage about Vignan's  University
 2. **Floating Chatbot Widget** — an AI chat assistant in the bottom-right corner
 
 ### Features
@@ -267,13 +267,7 @@ Then redeploy the frontend.
 
 ---
 
-## 👥 Team
 
-| Role | Responsibility |
-|---|---|
-| Frontend Developer | React UI, Chatbot Widget, Landing Page |
-| Backend Developer | FastAPI, RAG Pipeline, ChromaDB, Groq Integration |
-| Data / AI Engineer | Excel preprocessing, Embeddings, LangChain |
 
 ---
 

@@ -9,3 +9,4 @@ pandas
 streamlit
 python-dotenv
 sentence-transformers
+fastapi

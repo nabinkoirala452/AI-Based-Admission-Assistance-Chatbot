@@ -273,8 +273,7 @@ Then redeploy the frontend.
 
 ## 📄 License
 
-This project is developed for academic and institutional purposes at **Vignan's FSTR University**.
+This project is developed for academic and institutional purposes at VFSTR .
 
 ---
 
-> 💡 _Have questions about the codebase? Check `BACKEND_CONTRACT.md` for the full API specification or raise an issue in the repository._

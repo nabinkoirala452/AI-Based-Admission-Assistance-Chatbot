@@ -11,7 +11,7 @@ import chromadb
 load_dotenv()
 
 # ── Constants ──────────────────────────────────────────────────────────────────
-CHROMA_PATH = os.getenv("CHROMA_PATH", "../Data PreProcessing/chroma_db")
+CHROMA_PATH = os.getenv("CHROMA_PATH", "../data_preprocessing/chroma_db")
 COLLECTION_NAME = "university_qa"
 EMBED_MODEL = "all-MiniLM-L6-v2"
 RELEVANCE_THRESHOLD = 0.70   # ChromaDB cosine distance — below this = relevant

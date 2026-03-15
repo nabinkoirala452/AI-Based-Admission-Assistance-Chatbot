@@ -67,7 +67,7 @@ The knowledge base is built from **489 Q&A pairs** across **9 department sheets*
 
 ## Tech Stack
 
-| Layer | Technology | Cost |
+| Layer | Technology 
 |---|---|---|
 | **Frontend** | React (Vite) 
 | **Backend** | FastAPI (Python) 

@@ -12,7 +12,6 @@
 - [Project Structure](#project-structure)
 - [Frontend](#frontend)
 - [Backend](#backend)
-- [Deployment](#deployment)
 
 
 ---
@@ -74,9 +73,8 @@ The knowledge base is built from **489 Q&A pairs** across **9 department sheets*
 | **LLM** | LLaMA 3 via Groq API | Free |
 | **Embeddings** | sentence-transformers `all-MiniLM-L6-v2` | Free (local) |
 | **Vector Database** | ChromaDB | Free (local) |
-| **RAG Framework** | LangChain | Free |
-| **Frontend Deploy** | Vercel | Free |
-| **Backend Deploy** | Render | Free |
+| **RAG Framework** | LangChain + LanGraph | Free |
+| **Graph Orchestration** | LanGraph | Free |
 
 ---
 
@@ -245,7 +243,8 @@ Response sent back to Frontend with sources
 | **LLM Model** | LLaMA 3.1 8B Instant (via Groq API) |
 | **Embedding Model** | sentence-transformers `all-MiniLM-L6-v2` (local, no API key) |
 | **Vector Database** | ChromaDB (local, persistent) |
-| **RAG Framework** | LangChain + LanGraph |
+| **RAG Framework** | LangChain |
+| **Graph Orchestration** | LanGraph (state management & node orchestration) |
 | **Server** | FastAPI with CORS enabled |
 | **Chat Endpoints** | `/chat` (POST), `/sources` (GET), `/health` (GET) |
 
@@ -449,42 +448,6 @@ npm run dev
 # 5. Open browser
 # http://localhost:5173
 ```
-
----
-
-## Deployment
-
-### Frontend — Deploy on Vercel (Free)
-
-```bash
-# Install Vercel CLI
-npm install -g vercel
-
-# Inside frontend folder
-cd frontend
-vercel
-
-# Follow prompts → get a live URL like:
-# https://vignan-chatbot.vercel.app
-```
-
-### Backend — Deploy on Render (Free)
-
-1. Push backend code to GitHub
-2. Go to [render.com](https://render.com) → New Web Service
-3. Connect your GitHub repo
-4. Set environment variable: `GROQ_API_KEY=your_key_here`
-5. Deploy → get a live URL like: `https://vignan-chatbot-api.onrender.com`
-
-### Connect Frontend to Backend
-
-After backend is deployed, update this one line in `frontend/src/components/ChatBot.jsx`:
-
-```js
-const API_BASE_URL = "https://vignan-chatbot-api.onrender.com";
-```
-
-Then redeploy the frontend.
 
 ---
 
